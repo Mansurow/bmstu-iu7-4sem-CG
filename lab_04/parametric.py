@@ -1,4 +1,4 @@
-from draw import draw_pixels, set_pixel
+from draw_pixel import draw_simetric_pixels, set_pixel
 import math as m
 
 
@@ -7,7 +7,7 @@ import math as m
 # { y = yc + r * sin(t)
 # f = (x - xc)**2 + (y - yc)**2 + r**2
 # f = (r * cos(t)) ** 2 + (r ** sin(t))**2 + r**2
-def parameter_circle(xc, yc, r, color, canvas, draw):
+def parameter_circle(canvas, xc, yc, r, colour, draw):
     step = 1 / r
 
     i = 0
@@ -17,7 +17,7 @@ def parameter_circle(xc, yc, r, color, canvas, draw):
 
         if draw:
             # set_pixel(canvas, x, y, color)
-            draw_pixels(canvas, [x, y, color], xc, yc, circle=True)
+            draw_simetric_pixels(canvas, [x, y, colour], xc, yc, circle=True)
 
         i += step
 
@@ -26,7 +26,7 @@ def parameter_circle(xc, yc, r, color, canvas, draw):
 # { x = xc + ra * cos(t)
 # { y = yc + rb * sin(t)
 # f = (x - xc)**2 * ra**2 + (y - yc)**2 ** rb**2 + ra**2 * rb**2
-def parameter_ellipse(xc, yc, ra, rb, color, canvas, draw):
+def parameter_ellipse(canvas, xc, yc, ra, rb, colour, draw):
     if ra > rb:
         step = 1 / ra
     else:
@@ -38,6 +38,6 @@ def parameter_ellipse(xc, yc, ra, rb, color, canvas, draw):
         y = yc + round(rb * m.sin(i))
 
         if draw:
-            draw_pixels(canvas, [x, y, color], xc, yc, circle=False)
+            draw_simetric_pixels(canvas, [x, y, colour], xc, yc, circle=False)
 
         i += step

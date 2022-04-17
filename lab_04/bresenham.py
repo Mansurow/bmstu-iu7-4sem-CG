@@ -1,13 +1,13 @@
-from draw import draw_pixels, set_pixel
+from draw_pixel import draw_simetric_pixels, set_pixel
 
 
 # 1/4 часть
-def bresenham_circle_quadrant(xc, yc, r, color, canvas, draw):
+def bresenham_circle_quadrant(canvas, xc, yc, r, colour, draw):
     x = 0
     y = r
 
     if draw:
-        draw_pixels(canvas, [x + xc, y + yc, color], xc, yc, circle=True)
+        draw_simetric_pixels(canvas, [x + xc, y + yc, colour], xc, yc, circle=True)
 
     delta = 2 * (1 - r)
 
@@ -37,46 +37,47 @@ def bresenham_circle_quadrant(xc, yc, r, color, canvas, draw):
 
         if draw:
             # set_pixel(canvas, x + xc, y + yc, color)
-            draw_pixels(canvas, [x + xc, y + yc, color], xc, yc, circle = True)
+            draw_simetric_pixels(canvas, [x + xc, y + yc, colour], xc, yc, circle=True)
 
 
 # 1/8
-def bresenham_circle_octant(xc, yc, r, color, canvas, draw):
+def bresenham_circle_octant(canvas, xc, yc, r, colour, draw):
     x = 0
     y = r
 
     if draw:
-        draw_pixels(canvas, [x + xc, y + yc, color], xc, yc, circle=True)
+        draw_simetric_pixels(canvas, [x + xc, y + yc, colour], xc, yc, circle=True)
 
     delta = 2 * (1 - r)
 
     while y >= x:
-        d1 = 2 * (delta + y) - 1
+        d = 2 * (delta + y) - 1
+        x += 1
 
-        x += 1                        # так у обоих шагов увеличивается x, то можно вынести
-        if d1 >= 0:
+        if d >= 0:
             y -= 1
-            delta += 2 * (x - y + 1)  # диагональный шаг
+            delta += 2 * (x - y + 1)
         else:
-            delta += 2 * x + 1        # горизонтальный шаг
+            delta += x + x + 1
 
         if draw:
             # set_pixel(canvas, x + xc, y + yc, color)
-            draw_pixels(canvas, [x + xc, y + yc, color], xc, yc, circle=True)
+            draw_simetric_pixels(canvas, [x + xc, y + yc, colour], xc, yc, circle=True)
 
 
-def bresenham_ellipse(xc, yc, ra, rb, color, canvas, draw):
+def bresenham_ellipse(canvas, xc, yc, ra, rb, colour, draw):
     x = 0
     y = rb
 
     if draw:
-        draw_pixels(canvas, [x + xc, y + yc, color], xc, yc, circle=False)
+        draw_simetric_pixels(canvas, [x + xc, y + yc, colour], xc, yc, circle=False)
 
     sqr_ra = ra * ra
     sqr_rb = rb * rb
     delta = sqr_rb - sqr_ra * (2 * rb + 1)
 
     while y >= 0:
+
         if delta < 0:
             d1 = 2 * delta + sqr_ra * (2 * y + 2)
 
@@ -101,4 +102,4 @@ def bresenham_ellipse(xc, yc, ra, rb, color, canvas, draw):
             delta += sqr_rb * (2 * x + 1) + sqr_ra * (1 - 2 * y)
 
         if draw:
-            draw_pixels(canvas, [x + xc, y + yc, color], xc, yc, circle = False)
+            draw_simetric_pixels(canvas, [x + xc, y + yc, colour], xc, yc, circle=False)

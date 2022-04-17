@@ -1,15 +1,15 @@
-import time
-import numpy as np
 import tkinter as tk
-import matplotlib.pyplot as plt
 from tkinter import colorchooser, messagebox
 
+# ------------------------------------------------------------------------------
+# Мои модули
 from config import *
-from bresenham import bresenham_circle_octant, bresenham_ellipse
-from canonic import canonical_сircle, canonical_ellipse
-from parametric import parameter_circle, parameter_ellipse
-from midpoint import midpoint_circle, midpoint_ellipse
-from draw import set_pixel, draw_pixels
+from algorithms import canonical_ellipse, parameter_ellipse, midpoint_ellipse, bresenham_ellipse,  \
+                       canonical_сircle, parameter_circle, midpoint_circle, bresenham_circle_octant, \
+                       spectrumCircleBy_algorith, spectrumEllipseBy_algorith, spectrumBy_standart, \
+                       add_circle, add_ellipse
+from time_measure import time_comparison, drawAxes
+# --------------------------------------------------------------------------------
 
 root = tk.Tk()
 root.title("КГ Лабораторная работа 4")
@@ -20,20 +20,9 @@ root.resizable(height=False, width=False)
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 def clearScreen():
     canvasFiled.delete("all")
-
-
-def standart_oval(canvas, xc, yc, ra, rb, color):
-    canvas.create_oval(xc - ra, yc - rb, xc + ra, yc + rb, outline=color)
-
-
-def spectrumBy_standart(canvas, xc, yc, ra, rb, step, count, colour):
-    for e in range(0, count):
-        standart_oval(canvas, xc, yc, ra, rb, colour)
-        ra += step
-        rb += step
+    drawAxes(canvasFiled)
 
 
 def draw_circle():
@@ -50,25 +39,26 @@ def draw_circle():
                                'Не задан радиус окружности!')
     else:
         try:
-            xc = round(float(xc))
-            yc = round(float(yc))
-            r = round(float(r))
+            xc = int(xc)
+            yc = int(yc)
+        except ValueError:
+            messagebox.showwarning("Ошибка",
+                                   "Неверно заданы координаты центра (Xc, Yc) фигуры!\n"
+                                   "Ожидался ввод целых чисел.")
+            return
+        try:
+            r = int(r)
+            if r <= 0:
+                messagebox.showwarning("Ошибка",
+                                       "Неверно задан радиус R окружности - не может быть меньше 1!\n")
+                return
+        except ValueError:
+            messagebox.showwarning("Ошибка",
+                                   "Неверно задан радиус R фигуры!\n"
+                                   "Ожидался ввод целого числа.")
+            return
 
-            value_alg = algorithmsRB.get()
-
-            if value_alg == 0:
-                canonical_сircle(xc, yc, r, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 1:
-                parameter_circle(xc, yc, r, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 2:
-                midpoint_circle(xc, yc, r, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 3:
-                bresenham_circle_octant(xc, yc, r, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 4:
-                standart_oval(canvasFiled, xc, yc, r, r, LINE_COLOUR)
-        except:
-            messagebox.showwarning('Ошибка ввода',
-                                   'В данных для построения окружности введенно(ы) некорректный(ые) символ(ы)!')
+        add_circle(canvasFiled, algorithmsRB, xc, yc, r, LINE_COLOUR)
 
 
 def draw_ellipse():
@@ -83,77 +73,33 @@ def draw_ellipse():
                                'Не заданы координаты центра фигуры!')
     elif not ra or not rb:
         messagebox.showwarning('Ошибка ввода',
-                                'Не заданы радиусы эллипса для построения эллипса!')
+                                'Не заданы радиусы эллипса!')
     else:
         try:
-            xc = round(float(xc))
-            yc = round(float(yc))
-            ra = round(float(ra))
-            rb = round(float(rb))
-            value_alg = algorithmsRB.get()
+            xc = int(xc)
+            yc = int(yc)
 
-            if value_alg == 0:
-                canonical_ellipse(xc, yc, ra, rb, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 1:
-                parameter_ellipse(xc, yc, ra, rb, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 2:
-                midpoint_ellipse(xc, yc, ra, rb, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 3:
-                bresenham_ellipse(xc, yc, ra, rb, LINE_COLOUR, canvasFiled, True)
-            elif value_alg == 4:
-                standart_oval(canvasFiled, xc, yc, ra, rb, LINE_COLOUR)
-        except:
-            messagebox.showwarning('Ошибка ввода',
-                                   'В данных для построения эллипса введенно(ы) некорректный(ые) символ(ы)!')
+        except ValueError:
+            messagebox.showwarning("Ошибка",
+                                   "Неверно заданы координаты центра (Xc, Yc) фигуры!\n"
+                                   "Ожидался ввод целых чисел.")
+            return
 
+        try:
+            ra = int(ra)
+            rb = int(rb)
+            if ra <= 0 or rb <= 0:
+                messagebox.showwarning("Ошибка",
+                                       "Неверно заданы радиусы Rx и Ry эллипса не могут быть меньше 1!\n")
+                return
+        except ValueError:
+            messagebox.showwarning("Ошибка",
+                                   "Неверно заданы радиусы Rx и Ry эллипса!\n"
+                                   "Ожидался ввод целых чисел.")
+            return
 
-def spectrumCircleBy_algorith(canvas, alg, xc, yc, rs, step, count, colour):
-    for e in range(0, count):
-        alg(xc, yc, rs, colour, canvas, True)
-        rs += step
+        add_ellipse(canvasFiled, algorithmsRB, xc, yc, ra, rb, LINE_COLOUR)
 
-
-def spectrumEllipseBy_algorith(canvas, alg, xc, yc, ra, rb, step, count, colour):
-    for e in range(0, count):
-        alg(xc, yc, ra, rb, colour, canvas, True)
-        ra += step
-        rb += step
-
-
-NUMBER_OF_RUNS = 5
-MAX_RADIUS = 10000
-STEP = 1000
-
-
-def time_ellipse(canvas, alg, xc, yc, ra, rb):
-    alg(xc, yc, ra, rb, LINE_COLOUR, canvas, False)
-
-
-def time_comparison(figure):
-
-
-
-    if figure == "ellipse":
-        figure = "эллипса"
-    else:
-        figure = "окружности"
-
-    plt.figure(figsize=(10, 6))
-    plt.rcParams['font.size'] = '12'
-    plt.title("Замеры времени для построения %s различными методами.\n" %(figure))
-
-    # plt.plot(radius_arr, time_list[0], label='Каноническое уравнение')
-    # plt.plot(radius_arr, time_list[1], label='Параметрическое уравнение')
-    # plt.plot(radius_arr, time_list[2], label='Алгоритм средней точки')
-    # plt.plot(radius_arr, time_list[3], label='Алгоритм Брезенхема')
-    # plt.plot(radius_arr, time_list[4], label='Библиотечная функция')
-
-    plt.xticks(np.arange(STEP, MAX_RADIUS + STEP, STEP))
-    plt.legend()
-    plt.xlabel("Длина радиуса")
-    plt.ylabel("Время")
-
-    plt.show()
 
 def draw_spectrum(mode):
 
@@ -164,8 +110,14 @@ def draw_spectrum(mode):
         messagebox.showwarning('Ошибка ввода',
                                'Не заданы координаты центра фигуры!')
     else:
-        xc = round(float(yc))
-        yc = round(float(yc))
+        try:
+            xc = int(xc)
+            yc = int(yc)
+        except ValueError:
+            messagebox.showwarning("Ошибка",
+                                   "Неверно заданы координаты центра (Xc, Yc) фигуры!\n"
+                                   "Ожидался ввод целых чисел.")
+            return
 
         step = stepEntry.get()
         count = countEntry.get()
@@ -176,10 +128,28 @@ def draw_spectrum(mode):
             messagebox.showwarning('Ошибка ввода',
                                    'Не заданo количество фигур!')
         else:
-
-            step = round(float(step))
-            count = int(count)
-
+            try:
+                step = int(step)
+                if step <= 0:
+                    messagebox.showwarning("Ошибка",
+                                           "Неверно заданы шаг изменения фигуры не может быть меньше 1 при построении спектра!\n")
+                    return
+            except ValueError:
+                messagebox.showwarning("Ошибка",
+                                       "Неверно заданы шаг изменения фигуры при построении спектра!\n"
+                                       "Ожидался ввод целых чисел.")
+                return
+            try:
+                count = int(count)
+                if count <= 0:
+                    messagebox.showwarning("Ошибка",
+                                           "Неверно заданы кол-во фигур не может быть меньше 1 при построении спектра!\n")
+                    return
+            except ValueError:
+                messagebox.showwarning("Ошибка",
+                                       "Неверно заданы кол-во фигур при построении спектра!\n"
+                                       "Ожидался ввод целых чисел.")
+                return
             if mode == "circle":
 
                 rs = spnREntry.get()
@@ -187,7 +157,18 @@ def draw_spectrum(mode):
                     messagebox.showwarning('Ошибка ввода',
                                            'Не заданo начальный радиус окружности для построения спектра!')
                 else:
-                    rs = round(float(rs))
+                    try:
+                        rs = int(rs)
+                        if rs <= 0:
+                            messagebox.showwarning("Ошибка",
+                                                   "Неверно задан начальный радиус окружности не может быть меньше 1 для построения спектра!\n")
+                            return
+                    except ValueError:
+                        messagebox.showwarning("Ошибка",
+                                               "Неверно задан начальный радиус окружности для построения спектра!\n"
+                                               "Ожидался ввод целого числа.")
+                        return
+
                     value_alg = algorithmsRB.get()
                     if value_alg == 0:
                         spectrumCircleBy_algorith(canvasFiled, canonical_сircle, xc, yc, rs, step, count, LINE_COLOUR)
@@ -206,8 +187,18 @@ def draw_spectrum(mode):
                     messagebox.showwarning('Ошибка ввода',
                                            'Не заданo начальные радиусы эллипса для построения спектра!')
                 else:
-                    ra = round(float(ra))
-                    rb = round(float(rb))
+                    try:
+                        ra = int(ra)
+                        rb = int(rb)
+                        if ra <= 0 or rb <= 0:
+                            messagebox.showwarning("Ошибка",
+                                                   "Неверно задан начальные радиусы эллипса не могут быть меньше 1 для построения спектра!\n")
+                            return
+                    except ValueError:
+                        messagebox.showwarning("Ошибка",
+                                               "Неверно задан начальные радиусы эллипса для построения спектра!\n"
+                                               "Ожидался ввод целых чисел.")
+                        return
 
                     value_alg = algorithmsRB.get()
                     if value_alg == 0:
@@ -508,29 +499,29 @@ drawSpnEllipseBtn.place(x=10 + DATA_FRAME_WIGHT // 2, y=(makeSpecter + 7) * DATA
 
 def show_info():
     messagebox.showinfo('Информация',
-                        'С помощью данной программы можно построить отрезки 6 способами:\n'
-                        '1) методом цифрового дифференциального анализатора;\n'
-                        '2) методом Брезенхема с действитльными коэфициентами;\n'
-                        '3) методом Брезенхема с целыми коэфициентами;\n'
-                        '4) методом Брезенхема с устранением ступенчатости;\n'
-                        '5) методом Ву;\n'
-                        '6) стандартым методом.\n'
-                        '\nДля построения отрезка необходимо задать его начало\n'
-                        'и конец и выбрать метод построения из списка предложенных.\n'
-                        '\nДля построения спектра (пучка отрезков)\n'
-                        'необходимо задать начало и конец,\n'
+                        'С помощью данной программы можно построить окружность или эллипс 5-ми способами:\n'
+                        '1) используя Каноническое уравнение;\n'
+                        '2) используя Параметрическое уравнение;\n'
+                        '3) Алгоритм средней точки;\n'
+                        '4) Алгоритм Брезенхема;\n'
+                        '5) стандартым методом.\n'
+                        '\nДля построения окружности необходимо задать центр (Xc, Yc)\n'
+                        'и радиус R и выбрать метод построения из списка предложенных.\n'
+                        '\nДля построения эллипса необходимо задать центр (Xc, Yc)\n'
+                        'и радиусы Rx и Ry; выбрать метод построения из списка предложенных.\n'
+                        '\nДля построения спектра фигур\n'
+                        'необходимо задать центр фигуры, радиус(ы)\n'
                         'выбрать метод для построения,\n'
-                        'а также угол поворота отрезка.\n'
-                        '\nДля анализа ступенчатости достаточно нажать на кнопку "Сравнение ступенчатости".\n'
-                        'Анализ ступенчатости и времени исполнения приводится\n'
-                        'в виде графиков pyplot.\n'
-                        'Введите длину отрезка, если хотите сделать анализ программы\n'
-                        'при построении отрезков определенной длины.')
+                        'а также шаг изменения и количество фигур.\n'
+                        '\nДля анализа времени работы построения окружности нужно нажать на кнопку "Сравнение времени построение окружности".\n'
+                        '\nДля анализа времени работы построения эллипса нужно нажать на кнопку "Сравнение времени построение эллипса".\n'
+                        )
 
 
-TimeBarSpnCircleBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Сравнение времени\n построение окружности", font=("Consolas", 14))
+TimeBarSpnCircleBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Сравнение времени\n построение окружности", font=("Consolas", 14),
+                                command=lambda: time_comparison(canvasFiled, LINE_COLOUR, "circle"))
 TimeBarEllipseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Сравнение времени\n построение эллипса", font=("Consolas", 14),
-                              command=lambda: time_comparison("ellipse"))
+                              command=lambda: time_comparison(canvasFiled, LINE_COLOUR, "ellipse"))
 
 clearCanvasBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Очистить экран", font=("Consolas", 14), command=clearScreen)
 infoBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Справка", font=("Consolas", 14),
@@ -546,9 +537,20 @@ canvasFiled = tk.Canvas(root, bg=CANVAS_COLOUR)
 canvasFiled.place(x=WINDOW_WIDTH * DATA_SITUATION + BORDERS_SPACE, y=BORDERS_SPACE, width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-xcEntry.insert(0, str(545))
-ycEntry.insert(0, str(350))
+xcEntry.insert(0, str(int(CANVAS_WIDTH / 2)))
+ycEntry.insert(0, str(int(CANVAS_HEIGHT / 2)))
 
-#drawAxes()
+rEntry.insert(0, str(100))
+rxEntry.insert(0, str(100))
+ryEntry.insert(0, str(200))
+
+spnREntry.insert(0, str(50))
+spnRxEntry.insert(0, str(100))
+spnRyEntry.insert(0, str(50))
+
+stepEntry.insert(0, str(5))
+countEntry.insert(0, str(20))
+
+drawAxes(canvasFiled)
 
 root.mainloop()
