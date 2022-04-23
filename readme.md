@@ -7,8 +7,20 @@ bmstu, Computer Graphics (4 семестр - 2022 год)
 Можно(нужно) готовится прямо по этой книге т.к. хороший ответ - ответ слово в слово из лекций/этой книги.  
 Без такой подготовки очень сложно понимать вопросы Андрея Владимировича. 
 
-[**№1 Геометрическая задача**](https://github.com/Mansurow/IU7-w-2020/tree/developer/semester_4/%D0%9A%D0%BE%D0%BC%D0%BF%D1%8C%D1%82%D0%B5%D1%80%D0%BD%D0%B0%D1%8F%20%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%BA%D0%B0/lab_01) - Принята
+Лекции возможно - вот [Wiki](https://github.com/Mansurow/bmstu_CG/wiki)
 
-[**№2 Преобразование изображений**](https://github.com/Mansurow/IU7-w-2020/tree/developer/semester_4/%D0%9A%D0%BE%D0%BC%D0%BF%D1%8C%D1%82%D0%B5%D1%80%D0%BD%D0%B0%D1%8F%20%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D0%BA%D0%B0/lab_02) - Принята
+| Lab № | Название | Status | Оценка |
+|:------:|:-----:|:-----:|:-----:|
+| 1 | [Геометрическая задача](https://github.com/Mansurow/bmstu_CG/tree/master/lab_01) |:white_check_mark: | - |
+| 2 | [Преобразование изображений](https://github.com/Mansurow/bmstu_CG/tree/master/lab_02) |:white_check_mark: | - |
+| 3 | [Растровая развертка отрезка](https://github.com/Mansurow/bmstu_CG/tree/master/lab_03) |:white_large_square: | - |
+| 4 | [Растровая развертка окружности и эллипса](https://github.com/Mansurow/bmstu_CG/tree/master/lab_04) | :white_large_square: | - |
+| 5 |  |:white_large_square: | - |
+| 6 |  |:white_large_square: | - |
+| 7 |  |:white_large_square: | - |
+| 8 |  |:white_large_square: | - |
+| 9 |  |:white_large_square: | - |
+| 10 |  |:white_large_square: | - |
+| 11 |  |:white_large_square: | - |
 
 Дальше больше - ждемс 
