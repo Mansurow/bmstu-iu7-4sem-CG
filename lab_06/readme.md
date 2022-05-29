@@ -17,5 +17,7 @@
 
 ## Реализация
 
+![image](https://user-images.githubusercontent.com/62243773/169666083-d8613872-4d60-499e-809a-836360ed1162.png)
+
 ## Вопросы
 
