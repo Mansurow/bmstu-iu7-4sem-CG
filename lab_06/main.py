@@ -256,13 +256,13 @@ borderColourLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Цвет гр
 fillColourLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Цвет закраски:",
                      font=("Consolas", 13),
                      fg=MAIN_COLOUR_LABEL_TEXT)
-bgColourLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Цвет фона:",
-                     font=("Consolas", 14),
-                     fg=MAIN_COLOUR_LABEL_TEXT)
+# bgColourLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Цвет фона:",
+#                      font=("Consolas", 14),
+#                      fg=MAIN_COLOUR_LABEL_TEXT)
 
 borderCurColourLabel = tk.Label(dataFrame, bg=BORDER_COLOUR)
 fillCurColourLabel = tk.Label(dataFrame, bg=FILL_COLOUR)
-bgCurColourLabel = tk.Label(dataFrame, bg=CANVAS_COLOUR)
+#bgCurColourLabel = tk.Label(dataFrame, bg=CANVAS_COLOUR)
 
 def get_colour(mode):
     global BORDER_COLOUR, FILL_COLOUR, CANVAS_COLOUR
@@ -276,32 +276,32 @@ def get_colour(mode):
         colour = colour_code[-1]
         FILL_COLOUR = colour
         fillCurColourLabel.configure(bg=colour)
-    if mode == "bg":
-        colour_code = colorchooser.askcolor(title="Выбрать цвет границы!")
-        colour = colour_code[-1]
-        CANVAS_COLOUR = colour
-        canvasImg.put(colour, to=(0,0, CANVAS_WIDTH, CANVAS_HEIGHT))
-        bgCurColourLabel.configure(bg=colour)
+    # if mode == "bg":
+    #     colour_code = colorchooser.askcolor(title="Выбрать цвет границы!")
+    #     colour = colour_code[-1]
+    #     CANVAS_COLOUR = colour
+    #     canvasImg.put(colour, to=(0,0, CANVAS_WIDTH, CANVAS_HEIGHT))
+    #     bgCurColourLabel.configure(bg=colour)
 
 
 borderColourBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text='Выбрать цвет гр-цы', font=("Consolas", 13), command=lambda: get_colour("border"))
 fillColourBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text='Выбрать цвет закр-ки', font=("Consolas", 13), command=lambda: get_colour("fill"))
-bgColourBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text='Выбрать цвет фона', font=("Consolas", 13), command=lambda: get_colour("bg"))
+#bgColourBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text='Выбрать цвет фона', font=("Consolas", 13), command=lambda: get_colour("bg"))
 
 yColourLine = 1.2
 borderColourLabel.place(x=0, y=yColourLine * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2.5, height=DATA_FRAME_HEIGHT // COLUMNS)
 fillColourLabel.place(x=0, y=(yColourLine + 1.1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2.5, height=DATA_FRAME_HEIGHT // COLUMNS)
-bgColourLabel.place(x=0, y=(yColourLine + 2.2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2.5, height=DATA_FRAME_HEIGHT // COLUMNS)
+#bgColourLabel.place(x=0, y=(yColourLine + 2.2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2.5, height=DATA_FRAME_HEIGHT // COLUMNS)
 
 
 borderColourBtn.place(x=1.5 * DATA_FRAME_WIGHT // 3 - BORDERS_SPACE, y=yColourLine * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2, height=DATA_FRAME_HEIGHT // COLUMNS)
 fillColourBtn.place(x=1.5 * DATA_FRAME_WIGHT // 3 - BORDERS_SPACE, y=(yColourLine + 1.1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2, height=DATA_FRAME_HEIGHT // COLUMNS)
-bgColourBtn.place(x=1.5 * DATA_FRAME_WIGHT // 3 - BORDERS_SPACE, y=(yColourLine + 2.2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2, height=DATA_FRAME_HEIGHT // COLUMNS)
+#bgColourBtn.place(x=1.5 * DATA_FRAME_WIGHT // 3 - BORDERS_SPACE, y=(yColourLine + 2.2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2, height=DATA_FRAME_HEIGHT // COLUMNS)
 
 
 borderCurColourLabel.place(x=DATA_FRAME_WIGHT // 3 + BORDERS_SPACE, y=yColourLine * DATA_FRAME_HEIGHT // COLUMNS + 5, width=DATA_FRAME_WIGHT // 9, height=DATA_FRAME_HEIGHT // COLUMNS - 10)
 fillCurColourLabel.place(x=DATA_FRAME_WIGHT // 3 + BORDERS_SPACE, y=(yColourLine + 1.1) * DATA_FRAME_HEIGHT // COLUMNS + 5, width=DATA_FRAME_WIGHT // 9, height=DATA_FRAME_HEIGHT // COLUMNS - 10)
-bgCurColourLabel.place(x=DATA_FRAME_WIGHT // 3 + BORDERS_SPACE, y=(yColourLine + 2.2) * DATA_FRAME_HEIGHT // COLUMNS + 5, width=DATA_FRAME_WIGHT // 9, height=DATA_FRAME_HEIGHT // COLUMNS - 10)
+#bgCurColourLabel.place(x=DATA_FRAME_WIGHT // 3 + BORDERS_SPACE, y=(yColourLine + 2.2) * DATA_FRAME_HEIGHT // COLUMNS + 5, width=DATA_FRAME_WIGHT // 9, height=DATA_FRAME_HEIGHT // COLUMNS - 10)
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Режим закраски
 
@@ -373,12 +373,17 @@ labelTextInfo_2 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Средняя 
 labelTextInfo_3 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Правая кнопка - замкнуть фигуру",
                              font=("Consolas", 14),
                              fg=MAIN_COLOUR_LABEL_TEXT)
+
+labelTextInfo_4 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Зажать левую кнопку - рисование кривых линий",
+                             font=("Consolas", 14),
+                             fg=MAIN_COLOUR_LABEL_TEXT)
+
 modeMouse = makePoint + 5.2
 modeByMouse.place(x=0, y=modeMouse * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 labelTextInfo_1.place(x=0, y=(modeMouse + 1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 labelTextInfo_2.place(x=0, y=(modeMouse + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 labelTextInfo_3.place(x=0, y=(modeMouse + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
-
+labelTextInfo_4.place(x=0, y=(modeMouse + 4) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 # --------------------------------------------------------------------------------------------------
 lineMakeLabel = tk.Label(dataFrame, bg=MAIN_COLOUR_LABEL_BG, text="ПОСТРОЕНИЕ ОКРУЖНОСТИ или ЭЛЛИПСА",
                              font=("Consolas", 16),
@@ -417,7 +422,7 @@ drawCircleBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, 
 drawEllipseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить эллипс", font=("Consolas", 13),
                           command=add_ellipse)
 
-makeCircleOREllipse = modeMouse + 4.2
+makeCircleOREllipse = modeMouse + 5.2
 lineMakeLabel.place(x=0, y=makeCircleOREllipse * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 argumnetsCenterLabel.place(x=0, y=(makeCircleOREllipse + 1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 xcEntry.place(x=DATA_FRAME_WIGHT // 4, y=(makeCircleOREllipse + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4, height=DATA_FRAME_HEIGHT // COLUMNS)
@@ -463,6 +468,7 @@ canvasImg.put(CANVAS_COLOUR, to=(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 canvasField.bind("<Button-1>", add_point_figure_onClick)
 canvasField.bind("<Button-2>", lambda event: add_seed(event.x, event.y))
 canvasField.bind("<Button-3>", lambda event: close_figure())
+canvasField.bind("<B1-Motion>", add_point_figure_onClick)
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 timeLabel = tk.Label(root, bg="gray", text="Время закраски: ",
