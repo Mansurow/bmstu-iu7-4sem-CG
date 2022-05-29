@@ -19,5 +19,7 @@
 
 ![image](https://user-images.githubusercontent.com/62243773/169666083-d8613872-4d60-499e-809a-836360ed1162.png)
 
+![image](https://user-images.githubusercontent.com/62243773/170882670-758f3742-3171-4754-bbca-cf859634afa6.png)
+
 ## Вопросы
 
