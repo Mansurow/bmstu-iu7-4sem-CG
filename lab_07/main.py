@@ -67,6 +67,27 @@ def drawLine():
 
         add_line(canvasField, lines, xStart, yStart, xEnd, yEnd, LINE_COLOUR)
 
+def add_vert_horiz_lines(rectangle, lines, canvas, colour):
+    if rectangle[0] == -1:
+        messagebox.showerror("Ошибка", "Отсутствует отсекатель")
+        return
+
+    x1 = rectangle[0]
+    y1 = rectangle[1]
+    x2 = rectangle[2]
+    y2 = rectangle[3]
+
+    dy = y2 - y1
+    dx = x2 - x1
+
+    lines.append([[x1, y1 + 0.1 * dy], [x1, y2 - 0.1 * dy], colour])
+    lines.append([[x1 + 0.1 * dx, y1], [x2 - 0.1 * dx, y1], colour])
+
+    canvas.create_line(x1, y1 + 0.1 * dy, x1, y2 - 0.1 * dy, fill=colour)
+    canvas.create_line(x1 + 0.1 * dx, y1, x2 - 0.1 * dx, y1, fill=colour)
+
+
+
 def drawClipper():
     try:
         xl = int(xlbEntry.get())
@@ -368,7 +389,8 @@ canvasField.bind("<B1-Motion>", lambda event: click_left_motion(event))
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-addLineBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Добавить горизонтальные и \nвертикальные отрезки", font=("Consolas", 14))
+addLineBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Добавить горизонтальные и \nвертикальные отрезки", font=("Consolas", 14),
+                       command=lambda: add_vert_horiz_lines(rectangle, lines, canvasField, LINE_COLOUR))
 cutBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Отсечь", font=("Consolas", 14), command=cut_off_command)
 
 clearCanvasBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Очистить экран", font=("Consolas", 14), command=clear_canvas)

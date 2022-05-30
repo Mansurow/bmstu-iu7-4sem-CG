@@ -57,7 +57,7 @@ def sutherland_cohen_algorithm(rectangle, line):
         T1 = T_arr(rectangle, p1)
         T2 = T_arr(rectangle, p2)
 
-        pr = find_visibility(rectangle, T1, T2)
+        pr = find_visibility(T1, T2)
         if pr == -1:
             return pr, [p1, p2]
         if pr == 1:
@@ -82,7 +82,7 @@ def sutherland_cohen_algorithm(rectangle, line):
 
     return pr, [p1, p2]
 
-def find_visibility(rectangle, T1, T2):
+def find_visibility(T1, T2):
     S1 = count_S(T1)
     S2 = count_S(T2)
 
