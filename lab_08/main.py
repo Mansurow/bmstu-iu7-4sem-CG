@@ -4,6 +4,7 @@ from tkinter import colorchooser, messagebox
 from config import *
 from draw import add_line, set_pixel, \
     add_vertex_clipper, close_clipper
+from cut_algorithms import check_convexity_polygon, cyrus_beck_alg
 
 root = tk.Tk()
 root.title("КГ Лабораторная работа №8 \"Алгоритм Кируса-Бека\"")
@@ -39,16 +40,34 @@ def click_middle(event):
                                'Отсекатель не может состоять из вершин меньше 3!')
         return
 
-
     is_set_rectangle = True
-    close_clipper(canvasField, clipper_figure, LINE_COLOUR)
+    close_clipper(canvasField, clipper_figure, CLIPPER_COLOUR)
 
 def click_left(event):
-    add_vertex_clipper(canvasField, clipper_figure, [event.x, event.y], LINE_COLOUR)
+    global is_set_rectangle
+    if is_set_rectangle:
+        clipper_figure.clear()
+        canvasField.delete("all")
+        for line in lines:
+            if len(line) > 1:
+                canvasField.create_line(line[0], line[1], fill=LINE_COLOUR)
+        is_set_rectangle = False
+
+    add_vertex_clipper(canvasField, clipper_figure, [event.x, event.y], CLIPPER_COLOUR)
 
 def cut_off_command():
     if not clipper_figure:
-        messagebox.showinfo("Ошибка", "Отсутствует отсекатель")
+        messagebox.showinfo("Ошибка!", "Отсутствует отсекатель")
+        return
+    if not check_convexity_polygon(clipper_figure):
+        messagebox.showinfo("Ошибка!", "Отсекатель невыпуклый! Ожидалось, что отсекатель будет выпуклым!")
+        return
+
+    canvasField.create_polygon(clipper_figure, outline=CLIPPER_COLOUR, fill=CANVAS_COLOUR)
+
+    for line in lines:
+        if len(line) > 1:
+            cyrus_beck_alg(canvasField, clipper_figure, line, RESULT_COLOUR)
 
 def clear_canvas():
     global is_set_rectangle
@@ -81,6 +100,7 @@ def drawLine():
         add_line(canvasField, lines, xStart, yStart, xEnd, yEnd, LINE_COLOUR)
 
 def drawVertex():
+    global is_set_rectangle
     xClipper = xclEntry.get()
     yClipper = yclEntry.get()
 
@@ -98,27 +118,16 @@ def drawVertex():
                                'Ожидался ввод целочисленных данных!')
         return
 
-    add_vertex_clipper(canvasField, clipper_figure, [xClipper, yClipper], LINE_COLOUR)
+    if is_set_rectangle:
+        clipper_figure.clear()
+        canvasField.delete("all")
+        for line in lines:
+            if len(line) > 1:
+                canvasField.create_line(line[0], line[1], fill=LINE_COLOUR)
+        is_set_rectangle = False
 
-def drawClipper():
-    print()
-    # try:
-    #     xl = int(xlbEntry.get())
-    #     yl = int(ylbEntry.get())
-    #     xr = int(xrlEntry.get())
-    #     yr = int(yrlEntry.get())
-    # except:
-    #     messagebox.showwarning("Ошибка ввода",
-    #                            "Неверно заданны координаты вершин прямоугольника!\n"
-    #                            "Ожидался ввод целых чисел.")
-    #     return
-    #
-    # rectangle[0] = xl
-    # rectangle[1] = yl
-    # rectangle[2] = xr
-    # rectangle[3] = yr
-    #
-    # draw_rectangle(canvasField, rectangle, lines, CLIPPER_COLOUR)
+    add_vertex_clipper(canvasField, clipper_figure, [xClipper, yClipper], CLIPPER_COLOUR)
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # INPUT DATA FRAME
 
@@ -355,7 +364,7 @@ xclEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14),
 yclEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
 
 drawClipperVertexBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить вершину", font=("Consolas", 14), command=drawVertex)
-drawClipperCloseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Замкнуть", font=("Consolas", 14), command=drawClipper)
+drawClipperCloseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Замкнуть", font=("Consolas", 14), command=drawVertex)
 
 makeClipper = makePoint + 4.1
 clipperMakeLabel.place(x=0, y=makeClipper * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
