@@ -11,4 +11,5 @@
 
 ## Реализация
 
-Вопросы
+![image](https://user-images.githubusercontent.com/62243773/173195564-fc325b76-c50a-4ab4-8446-819048b18f31.png)
+
