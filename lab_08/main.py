@@ -33,7 +33,7 @@ def click_right(event, lines, canvas, linecolour):
 
         lines[-1].append(linecolour)
 
-def click_middle(event):
+def click_middle(event=None):
     global is_set_rectangle
     if len(clipper_figure) < 3:
         messagebox.showwarning('Ошибка ввода!',
@@ -54,6 +54,27 @@ def click_left(event):
         is_set_rectangle = False
 
     add_vertex_clipper(canvasField, clipper_figure, [event.x, event.y], CLIPPER_COLOUR)
+
+def addParallelLines():
+    if not clipper_figure:
+        messagebox.showerror("Ошибка", "Отсутствует отсекатель")
+        return
+    for i in range(len(clipper_figure) - 1):
+        x1 = clipper_figure[i][0]
+        y1 = clipper_figure[i][1]
+        x2 = clipper_figure[i + 1][0]
+        y2 = clipper_figure[i + 1][1]
+
+        dx = x2 - x1
+        dy = y2 - y1
+        k = (y2 - y1) / (x2 - x1)
+        def find_paralel(k, x1, y1, x2):
+            return y1 + k * (x2 - x1)
+        if dx > dy:
+            lines.append([[x1, y1 + 0.5 * dy], [x2, find_paralel(k, x1, y1 + 0.5 * dy, x2)], LINE_COLOUR])
+            lines.append([[x1, y1 - 0.5 * dy], [x2, find_paralel(k, x1, y1 - 0.5 * dy, x2)], LINE_COLOUR])
+            canvasField.create_line(x1, y1 + 0.5 * dy, x2, find_paralel(k, x1, y1 + 0.5 * dy, x2), fill=LINE_COLOUR)
+            canvasField.create_line(x1, y1 - 0.5 * dy, x2, find_paralel(k, x1, y1 - 0.5 * dy, x2), fill=LINE_COLOUR)
 
 def cut_off_command():
     if not clipper_figure:
@@ -98,6 +119,7 @@ def drawLine():
             return
 
         add_line(canvasField, lines, xStart, yStart, xEnd, yEnd, LINE_COLOUR)
+
 
 def drawVertex():
     global is_set_rectangle
@@ -364,7 +386,7 @@ xclEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14),
 yclEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
 
 drawClipperVertexBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить вершину", font=("Consolas", 14), command=drawVertex)
-drawClipperCloseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Замкнуть", font=("Consolas", 14), command=drawVertex)
+drawClipperCloseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Замкнуть", font=("Consolas", 14), command=click_middle)
 
 makeClipper = makePoint + 4.1
 clipperMakeLabel.place(x=0, y=makeClipper * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
@@ -414,11 +436,12 @@ canvasField.bind("<Button-3>", lambda event: click_right(event, lines, canvasFie
 
 
 cutBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Отсечь", font=("Consolas", 14), command=cut_off_command)
-
+ParalelLinesBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить параллельные отрезки", font=("Consolas", 14), command=addParallelLines)
 clearCanvasBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Очистить экран", font=("Consolas", 14), command=clear_canvas)
 
-cutBtn.place(x=40, y=(modeMouse + 4) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
-clearCanvasBtn.place(x=40, y=(modeMouse + 5) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
+ParalelLinesBtn.place(x=40, y=(modeMouse + 4) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
+cutBtn.place(x=40, y=(modeMouse + 5) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
+clearCanvasBtn.place(x=40, y=(modeMouse + 6) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
 
 xnEntry.insert(0, 100)
 ynEntry.insert(0, 200)

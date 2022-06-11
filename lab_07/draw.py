@@ -1,5 +1,3 @@
-from tkinter import messagebox, END
-
 def draw_lines(canvas, lines):
     for line in lines:
         if len(line) == 3:

@@ -1,111 +1,19 @@
 import tkinter as tk
-from tkinter import colorchooser, messagebox
+from tkinter import colorchooser
 
 from config import *
-from draw import add_line, draw_rectangle, click_right, draw_rectangle_by_Button
-from alg_cut import sutherland_cohen_algorithm
+from command import clear_canvas, click_btn, close_figure, add_vertex, cut_off
 
 root = tk.Tk()
-root.title("КГ Лабораторная работа №7")
+root.title("КГ Лабораторная работа №9 \"Алгоритм \"")
 root["bg"] = MAIN_COLOUR
 
 root.geometry(str(WINDOW_WIDTH) + "x" + str(WINDOW_HEIGHT))
 root.resizable(height=False, width=False)
 
-lines = []
-rectangle = [-1, -1, -1, -1]
-is_set_rectangle = False
-# ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def click_left_motion(event):
-    global is_set_rectangle
-    is_set_rectangle = draw_rectangle_by_Button(event, rectangle, lines, canvasField, CLIPPER_COLOUR, is_set_rectangle)
+figure = []
+clipper = []
 
-def cut_off_command():
-    if rectangle[0] == -1:
-        messagebox.showinfo("Ошибка", "Отсутствует отсекатель")
-
-    rect = [min(rectangle[0], rectangle[2]), max(rectangle[0], rectangle[2]),
-            min(rectangle[1], rectangle[3]), max(rectangle[1], rectangle[3])]
-
-    canvasField.create_rectangle(rect[0] + 1, rect[2] + 1, rect[1] - 1, rect[3] - 1,
-                                                        fill=CANVAS_COLOUR, outline=CANVAS_COLOUR)
-
-    for line in lines:
-        if line:
-            pr, n_line = sutherland_cohen_algorithm(rect, line)
-            if pr == 1 or pr == 0:
-                canvasField.create_line(n_line[0][0], n_line[0][1], n_line[1][0], n_line[1][1], fill=RESULT_COLOUR)
-
-def clear_canvas():
-    global is_set_rectangle
-    canvasField.delete("all")
-    lines.clear()
-    is_set_rectangle = False
-    for i in range(4):
-        rectangle[i] = -1
-
-def drawLine():
-    xStart = xnEntry.get()
-    yStart = ynEntry.get()
-    xEnd = xkEntry.get()
-    yEnd = ykEntry.get()
-
-    if not xStart or not yStart:
-        messagebox.showwarning('Ошибка ввода',
-                               'Не заданы координаты начала отрезка!')
-    elif not xEnd or not yEnd:
-        messagebox.showwarning('Ошибка ввода',
-                               'Не заданы координаты конца отрезка!')
-    else:
-        try:
-            xStart, yStart = int(xStart), int(yStart)
-            xEnd, yEnd = int(xEnd), int(yEnd)
-        except all:
-            messagebox.showwarning('Ошибка ввода',
-                                   'Координаты заданы неверно!')
-            return
-
-        add_line(canvasField, lines, xStart, yStart, xEnd, yEnd, LINE_COLOUR)
-
-def add_vert_horiz_lines(rectangle, lines, canvas, colour):
-    if rectangle[0] == -1:
-        messagebox.showerror("Ошибка", "Отсутствует отсекатель")
-        return
-
-    x1 = rectangle[0]
-    y1 = rectangle[1]
-    x2 = rectangle[2]
-    y2 = rectangle[3]
-
-    dy = y2 - y1
-    dx = x2 - x1
-
-    lines.append([[x1, y1 + 0.1 * dy], [x1, y2 - 0.1 * dy], colour])
-    lines.append([[x1 + 0.1 * dx, y1], [x2 - 0.1 * dx, y1], colour])
-
-    canvas.create_line(x1, y1 + 0.1 * dy, x1, y2 - 0.1 * dy, fill=colour)
-    canvas.create_line(x1 + 0.1 * dx, y1, x2 - 0.1 * dx, y1, fill=colour)
-
-
-
-def drawClipper():
-    try:
-        xl = int(xlbEntry.get())
-        yl = int(ylbEntry.get())
-        xr = int(xrlEntry.get())
-        yr = int(yrlEntry.get())
-    except:
-        messagebox.showwarning("Ошибка ввода",
-                               "Неверно заданны координаты вершин прямоугольника!\n"
-                               "Ожидался ввод целых чисел.")
-        return
-
-    rectangle[0] = xl
-    rectangle[1] = yl
-    rectangle[2] = xr
-    rectangle[3] = yr
-
-    draw_rectangle(canvasField, rectangle, lines, CLIPPER_COLOUR)
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # INPUT DATA FRAME
 
@@ -126,11 +34,11 @@ chooseColourMainLabel.place(x=0, y=0, width=DATA_FRAME_WIGHT, height=DATA_FRAME_
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # выбор цвета отрезка
 
-lineColourLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Цвет отрезка:",
+lineColourLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Цвет фигуры:",
                      font=("Consolas", 16),
                      fg=MAIN_COLOUR_LABEL_TEXT)
 
-lineCurColourTextLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Текущий цвет отрезка:",
+lineCurColourTextLabel = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Текущий цвет фигуры:",
                      font=("Consolas", 15),
                      fg=MAIN_COLOUR_LABEL_TEXT)
 
@@ -143,9 +51,9 @@ def get_colour_line():
 
 
 def set_linecolour(color):
-    global LINE_COLOUR
-    LINE_COLOUR = color
-    lineCurColourLabel.configure(bg=LINE_COLOUR)
+    global FIGURE_COLOUR
+    FIGURE_COLOUR = color
+    lineCurColourLabel.configure(bg=FIGURE_COLOUR)
 
 
 whiteLine = tk.Button(dataFrame, bg="white", activebackground="white",
@@ -165,7 +73,7 @@ darkGreenLine = tk.Button(dataFrame, bg="darkgreen", activebackground="darkgreen
 lightBlueLine = tk.Button(dataFrame, bg="lightblue", activebackground="lightblue",
                         command=lambda: set_linecolour("lightblue"))
 
-lineColourBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text='Выбрать другой цвет от-ка', font=("Consolas", 14), command=get_colour_line)
+lineColourBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text='Выбрать другой цвет фигуры', font=("Consolas", 14), command=get_colour_line)
 
 yColourLine = 1.2
 lineColourLabel.place(x=5, y=yColourLine * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2.5, height=DATA_FRAME_HEIGHT // COLUMNS)
@@ -298,33 +206,30 @@ resultCurColourLabel.place(x=DATA_FRAME_WIGHT // 1.5, y=(yColourLine + 2) * DATA
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Построение точки
 
-pointMakeLabel = tk.Label(dataFrame, bg=MAIN_COLOUR_LABEL_BG, text="ПОСТРОЕНИЕ ОТРЕЗКА",
+pointMakeLabel = tk.Label(dataFrame, bg=MAIN_COLOUR_LABEL_BG, text="ПОСТРОЕНИЕ ФИГУРЫ",
                           font=("Consolas", 16),
                           fg=MAIN_COLOUR_LABEL_TEXT, relief=tk.SOLID)
 
-msgAboutPoint = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Xн        Yн       Xк        Yк",
+msgAboutPoint = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="X\t\tY",
                          font=("Consolas", 16),
                          fg=MAIN_COLOUR_LABEL_TEXT)
 
-xnEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
-ynEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
-xkEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
-ykEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
+xFigureEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
+yFigureEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
 
-drawLineBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить отрезок", font=("Consolas", 14), command=drawLine)
-
+drawFigureVertexBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить вершину", font=("Consolas", 14), command=lambda: add_vertex(canvasField, clipper, figure, CLIPPER_COLOUR, FIGURE_COLOUR, xFigureEntry, yFigureEntry))
+drawFigureCloseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Замкнуть фигуры", font=("Consolas", 14), command=lambda: close_figure(canvasField, figure, FIGURE_COLOUR, "Фигура"))
 
 makePoint = yColourLine + 3.1
 pointMakeLabel.place(x=0, y=makePoint * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 msgAboutPoint.place(x=0, y=(makePoint + 1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 
-xnEntry.place(x=5,                         y=(makePoint + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4 - 5, height=DATA_FRAME_HEIGHT // COLUMNS)
-ynEntry.place(x=1 * DATA_FRAME_WIGHT // 4, y=(makePoint + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4, height=DATA_FRAME_HEIGHT // COLUMNS)
-xkEntry.place(x=2 * DATA_FRAME_WIGHT // 4, y=(makePoint + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4, height=DATA_FRAME_HEIGHT // COLUMNS)
-ykEntry.place(x=3 * DATA_FRAME_WIGHT // 4, y=(makePoint + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4 - 5, height=DATA_FRAME_HEIGHT // COLUMNS)
+xFigureEntry.place(x=10,                         y=(makePoint + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
+yFigureEntry.place(x=DATA_FRAME_WIGHT // 2, y=(makePoint + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
 
 makePoint += 0.2
-drawLineBtn.place(x=DATA_FRAME_WIGHT // 6, y=(makePoint + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 1.5, height=DATA_FRAME_HEIGHT // COLUMNS)
+drawFigureVertexBtn.place(x=10, y=(makePoint + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
+drawFigureCloseBtn.place(x=DATA_FRAME_WIGHT // 2, y=(makePoint + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -334,44 +239,41 @@ clipperMakeLabel = tk.Label(dataFrame, bg=MAIN_COLOUR_LABEL_BG, text="ПОСТР
                           font=("Consolas", 16),
                           fg=MAIN_COLOUR_LABEL_TEXT, relief=tk.SOLID)
 
-msgAboutClipper = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Xлв       Yлв      Xпн        Yпн",
+msgAboutClipper = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="X\t\tY",
                          font=("Consolas", 16),
                          fg=MAIN_COLOUR_LABEL_TEXT)
 
-xlbEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
-ylbEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
-xrlEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
-yrlEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
+xclEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
+yclEntry = tk.Entry(dataFrame, bg=MAIN_COLOUR_LABEL_TEXT, font=("Consolas", 14), fg=MAIN_FRAME_COLOR, justify="center")
 
-drawClipperBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить отсекатель", font=("Consolas", 14), command=drawClipper)
-
+drawClipperVertexBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Построить вершину", font=("Consolas", 14), command=lambda: add_vertex(canvasField, figure, clipper, FIGURE_COLOUR, CLIPPER_COLOUR, xclEntry, yclEntry))
+drawClipperCloseBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Замкнуть от-ль", font=("Consolas", 14), command=lambda: close_figure(canvasField, clipper, CLIPPER_COLOUR, "Отсекатель"))
 
 makeClipper = makePoint + 4.1
 clipperMakeLabel.place(x=0, y=makeClipper * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 msgAboutClipper.place(x=0, y=(makeClipper + 1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 
-xlbEntry.place(x=5,                         y=(makeClipper + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4 - 5, height=DATA_FRAME_HEIGHT // COLUMNS)
-ylbEntry.place(x=1 * DATA_FRAME_WIGHT // 4, y=(makeClipper + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4, height=DATA_FRAME_HEIGHT // COLUMNS)
-xrlEntry.place(x=2 * DATA_FRAME_WIGHT // 4, y=(makeClipper + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4, height=DATA_FRAME_HEIGHT // COLUMNS)
-yrlEntry.place(x=3 * DATA_FRAME_WIGHT // 4, y=(makeClipper + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 4 - 5, height=DATA_FRAME_HEIGHT // COLUMNS)
+xclEntry.place(x=10,                         y=(makeClipper + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
+yclEntry.place(x=1 * DATA_FRAME_WIGHT // 2, y=(makeClipper + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
 
 makeClipper += 0.2
-drawClipperBtn.place(x=DATA_FRAME_WIGHT // 6, y=(makeClipper + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 1.5, height=DATA_FRAME_HEIGHT // COLUMNS)
-
+drawClipperVertexBtn.place(x=10, y=(makeClipper + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
+drawClipperCloseBtn.place(x=DATA_FRAME_WIGHT // 2, y=(makeClipper + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT // 2 - 10, height=DATA_FRAME_HEIGHT // COLUMNS)
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 modeByMouse = tk.Label(dataFrame, bg=MAIN_COLOUR_LABEL_BG, text="ПОСТРОЕНИЕ с помощью мыши",
                              font=("Consolas", 16),
                              fg=MAIN_COLOUR_LABEL_TEXT, relief=tk.SOLID)
-labelTextInfo_1 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Правая кнопка - Добавить отрезок",
+labelTextInfo_1 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Левая кнопка - Добавить вершину отсекатель",
                              font=("Consolas", 14),
                              fg=MAIN_COLOUR_LABEL_TEXT)
-labelTextInfo_2 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Левая кнопка - Добавить отсекатель \n(прямоугольник)",
+labelTextInfo_2 = tk.Label(dataFrame, bg=MAIN_FRAME_COLOR, text="Правая кнопка - Добавить вершины фигуры",
                              font=("Consolas", 14),
                              fg=MAIN_COLOUR_LABEL_TEXT)
 modeMouse = makeClipper + 4 + 0.2
 modeByMouse.place(x=0, y=modeMouse * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 labelTextInfo_1.place(x=0, y=(modeMouse + 1) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
 labelTextInfo_2.place(x=0, y=(modeMouse + 2) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT, height=DATA_FRAME_HEIGHT // COLUMNS)
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Кнопки сравнения, очистки
 
@@ -384,30 +286,25 @@ allFigures = []
 canvasField = tk.Canvas(root, bg=CANVAS_COLOUR, width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
 canvasField.pack(side=tk.RIGHT, padx=BORDERS_SPACE)
 
-canvasField.bind("<Button-3>", lambda event: click_right(event, lines, canvasField, LINE_COLOUR))
-canvasField.bind("<B1-Motion>", lambda event: click_left_motion(event))
+canvasField.bind("<Button-1>", lambda event: click_btn(event, figure, clipper, canvasField, CLIPPER_COLOUR, FIGURE_COLOUR))
+canvasField.bind("<Button-3>", lambda event: click_btn(event, clipper, figure, canvasField, FIGURE_COLOUR, CLIPPER_COLOUR))
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-addLineBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Добавить горизонтальные и \nвертикальные отрезки", font=("Consolas", 14),
-                       command=lambda: add_vert_horiz_lines(rectangle, lines, canvasField, LINE_COLOUR))
-cutBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Отсечь", font=("Consolas", 14), command=cut_off_command)
+cutBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Отсечь", font=("Consolas", 14), command=lambda: cut_off(canvasField, figure, clipper, RESULT_COLOUR))
+clearCanvasBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Очистить экран", font=("Consolas", 14), command=lambda: clear_canvas(canvasField, figure, clipper))
 
-clearCanvasBtn = tk.Button(dataFrame, bg=MAIN_COLOUR, fg=MAIN_COLOUR_LABEL_TEXT, text="Очистить экран", font=("Consolas", 14), command=clear_canvas)
-
-addLineBtn.place(x=40, y=(modeMouse + 3) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=2 * DATA_FRAME_HEIGHT // COLUMNS)
 cutBtn.place(x=40, y=(modeMouse + 5) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
 clearCanvasBtn.place(x=40, y=(modeMouse + 6) * DATA_FRAME_HEIGHT // COLUMNS, width=DATA_FRAME_WIGHT - 80, height=DATA_FRAME_HEIGHT // COLUMNS)
 
-xnEntry.insert(0, 100)
-ynEntry.insert(0, 200)
-xkEntry.insert(0, 800)
-ykEntry.insert(0, 500)
+xFigureEntry.insert(0, 100)
+yFigureEntry.insert(0, 200)
 
-xlbEntry.insert(0, 200)
-ylbEntry.insert(0, 100)
 
-xrlEntry.insert(0, 700)
-yrlEntry.insert(0, 600)
+xclEntry.insert(0, 200)
+yclEntry.insert(0, 100)
+
 
 root.mainloop()
+

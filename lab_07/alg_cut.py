@@ -37,7 +37,7 @@ def count_S(T):
 def logic_multy(T1, T2):
     mul = 0
     for i in range(4):
-        mul += T1[i] * T2[i]
+        mul |= T1[i] * T2[i]
     return mul
 
 def sutherland_cohen_algorithm(rectangle, line):
